@@ -9,7 +9,6 @@ from csv import writer
 from selenium import webdriver
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
 
 chrome_options = Options()
 chrome_options.add_argument("--headless")
@@ -32,7 +31,6 @@ finally:
 
 #add row to df with new reserves obsersation
 data = pd.read_csv('C:\\Users\\Chase\\Documents\\datasets\\anchorReserves.csv')
-newRow = [datetime.now(), reserves, 0]
 data.loc[len(data.index)] = [datetime.now(), reserves, 0]
 
 
