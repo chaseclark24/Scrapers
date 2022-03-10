@@ -10,8 +10,11 @@ from selenium import webdriver
 import numpy as np
 import pandas as pd
 
+chromeDriverService = ChromeDriverService.CreateDefaultService();
+chromeDriverService.HideCommandPromptWindow = true
 chrome_options = Options()
 chrome_options.add_argument("--headless")
+chrome_options.add_argument("disable-gpu")
 driver = webdriver.Chrome(ChromeDriverManager().install(), options=chrome_options)
 driver.get("https://app.anchorprotocol.com/")
 #the element is not loading immediately, it loads immediately with value 0, so sleep 5 sec
@@ -29,7 +32,7 @@ finally:
 	driver.quit()
 
 
-#add row to df with new reserves obsersation
+#read previous obersvations and add row to df with new reserves obsersation
 data = pd.read_csv('C:\\Users\\Chase\\Documents\\datasets\\anchorReserves.csv')
 data.loc[len(data.index)] = [datetime.now(), reserves, 0]
 
