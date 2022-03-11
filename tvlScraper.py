@@ -7,17 +7,18 @@
 # ['https://github.com/Rugfreecoins/Smart-Contract-Audits/blob/main/Libero%20Financial%20Token.pdf'], 'listedAt': 1646877651, 'slug': 'libero-financial', 'tvl': 0, 'chainTvls': {'Binance': 0, 'Binance-staking': 7098672.9698173655, 
 # 'staking': 7098672.9698173655}, 'change_1h': None, 'change_1d': None, 'change_7d': None, 'staking': 7098672.9698173655, 'fdv': 66945309, 'mcap': 0}]
 
-from asyncio.windows_events import NULL
 import requests, json
 from datetime import datetime
 import pandas as pd
+from sqlalchemy import create_engine
+from dbConnection import getDBURL
 
 timestamp = datetime.now()
 data = requests.get(f'https://api.llama.fi/protocols')
 id, time, name, url, description, chain, audits, audit_note, cmcId, category, listedAt, tvl, staking, mcap, chain_staking = [], [], [], [], [], [], [], [], [], [], [], [], [], [], []
 
 for rec in data.json():
-    id.append(rec.get('id', NULL))
+    id.append(rec.get('id', None))
     time.append(timestamp)
     name.append(rec.get('name', NULL))
     url.append(rec.get('url', NULL))
@@ -35,22 +36,28 @@ for rec in data.json():
 
 protocols = {
 	"id" : id,
-    "time" : time,
+	"time" : time,
 	"name" : name,
 	"url" : url,
 	"description" : description,
 	"chain" : chain,
-    "audits" : audits,
-    "audit_note" : audit_note,
-    "cmcId" : cmcId,
-    "category" : category,
-    "listedAt" : listedAt,
-    "tvl" : tvl,
-    "staking" : staking,
-    "mcap" : mcap,
-    "chain_staking" : chain_staking
+	"audits" : audits,
+	"audit_note" : audit_note,
+	"cmcId" : cmcId,
+	"category" : category,
+	"listedAt" : listedAt,
+	"tvl" : tvl,
+	"staking" : staking,
+	"mcap" : mcap,
+	"chain_staking" : chain_staking
 }
 
 df = pd.DataFrame(protocols, columns = ["id", "time", "name", "url", "description", "chain", "audits", "audit_note", "cmcId", "category", "listedAt", "tvl", "staking", "mcap", "chain_staking"])
 
-print(df)
+#print(df)
+
+
+url = getDBURL()
+my_conn=create_engine(url)
+df.to_sql(con=my_conn, name='tvl',if_exists='append', index=False)
+
