@@ -13,51 +13,57 @@ import pandas as pd
 from sqlalchemy import create_engine
 from dbConnection import getDBURL
 
-timestamp = datetime.now()
-data = requests.get(f'https://api.llama.fi/protocols')
-id, time, name, url, description, chain, audits, audit_note, cmcId, category, listedAt, tvl, staking, mcap, chain_staking = [], [], [], [], [], [], [], [], [], [], [], [], [], [], []
 
-for rec in data.json():
-    id.append(rec.get('id', None))
-    time.append(timestamp)
-    name.append(rec.get('name', NULL))
-    url.append(rec.get('url', NULL))
-    description.append(rec.get('description', NULL))
-    chain.append(rec.get('chain', NULL)) 
-    audits.append(rec.get('audits', NULL)) 
-    audit_note.append(rec.get('audit_note', NULL))
-    cmcId.append(rec.get('cmcId', NULL))
-    category.append(rec.get('category', NULL))
-    listedAt.append(rec.get('listedAt', NULL))
-    tvl.append(rec.get('tvl', NULL))
-    staking.append(rec.get('staking', NULL))
-    mcap.append(rec.get('mcap', NULL))
-    chain_staking.append(rec['chainTvls'].get('staking', NULL))
+def tvlScrape():
+    timestamp = datetime.now()
+    data = requests.get(f'https://api.llama.fi/protocols')
+    print(data)
+    id, time, name, url, description, chain, audits, audit_note, cmcId, category, listedAt, tvl, staking, mcap, chain_staking = [], [], [], [], [], [], [], [], [], [], [], [], [], [], []
 
-protocols = {
-	"id" : id,
-	"time" : time,
-	"name" : name,
-	"url" : url,
-	"description" : description,
-	"chain" : chain,
-	"audits" : audits,
-	"audit_note" : audit_note,
-	"cmcId" : cmcId,
-	"category" : category,
-	"listedAt" : listedAt,
-	"tvl" : tvl,
-	"staking" : staking,
-	"mcap" : mcap,
-	"chain_staking" : chain_staking
-}
+    for rec in data.json():
+        id.append(rec.get('id', None))
+        time.append(timestamp)
+        name.append(rec.get('name', None))
+        url.append(rec.get('url', None))
+        description.append(rec.get('description', None))
+        chain.append(rec.get('chain', None)) 
+        audits.append(rec.get('audits', None)) 
+        audit_note.append(rec.get('audit_note', None))
+        cmcId.append(rec.get('cmcId', None))
+        category.append(rec.get('category', None))
+        listedAt.append(rec.get('listedAt', None))
+        tvl.append(rec.get('tvl', None))
+        staking.append(rec.get('staking', None))
+        mcap.append(rec.get('mcap', None))
+        chain_staking.append(rec['chainTvls'].get('staking', None))
 
-df = pd.DataFrame(protocols, columns = ["id", "time", "name", "url", "description", "chain", "audits", "audit_note", "cmcId", "category", "listedAt", "tvl", "staking", "mcap", "chain_staking"])
+    protocols = {
+        "id" : id,
+        "time" : time,
+        "name" : name,
+        "url" : url,
+        "description" : description,
+        "chain" : chain,
+        "audits" : audits,
+        "audit_note" : audit_note,
+        "cmcId" : cmcId,
+        "category" : category,
+        "listedAt" : listedAt,
+        "tvl" : tvl,
+        "staking" : staking,
+        "mcap" : mcap,
+        "chain_staking" : chain_staking
+    }
 
-#print(df)
+    df = pd.DataFrame(protocols, columns = ["id", "time", "name", "url", "description", "chain", "audits", "audit_note", "cmcId", "category", "listedAt", "tvl", "staking", "mcap", "chain_staking"])
+
+    print(df)
 
 
-url = getDBURL()
-my_conn=create_engine(url)
-df.to_sql(con=my_conn, name='tvl',if_exists='append', index=False)
+    url = getDBURL()
+    my_conn=create_engine(url)
+    df.to_sql(con=my_conn, name='tvl',if_exists='append', index=False)
+
+
+
 
